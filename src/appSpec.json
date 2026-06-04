@@ -1,0 +1,219 @@
+{
+  "id": "8b91bbaa-dc94-4ea8-a804-43428b5b9a92",
+  "initialPrompt": "Create a website inspired by https://shophoacomay.vn",
+  "siteName": "shophoacomay.vn",
+  "brandBook": {
+    "tones": [
+      "Elegant",
+      "Professional",
+      "Trustworthy",
+      "Warm",
+      "Sophisticated",
+      "Calm",
+      "Premium"
+    ],
+    "designStyle": {
+      "primaryStyle": [
+        "Elegant"
+      ],
+      "supportingStyles": [
+        "Minimalist",
+        "Serene",
+        "Professional"
+      ]
+    },
+    "toneOfVoice": "Elegant, professional, trustworthy, warm, and sophisticated.",
+    "graphicElements": {
+      "icons": "Minimalist, line-based icons with consistent stroke weight, using primary or accent colors.",
+      "stickers": "",
+      "illustrations": "Elegant, abstract floral motifs or subtle line art, used sparingly as decorative elements."
+    },
+    "designSummary": "**The Serene Bloom: An Elegant Floral Experience**\n\nThe Vision: To translate the essence of fresh, timely floral delivery into a digital experience that embodies quiet luxury and sophisticated confidence. The design will evoke the feeling of receiving a meticulously crafted gift, prioritizing clarity, elegance, and a sense of calm. This is achieved through a harmonious blend of generous whitespace, refined typography, and a restrained, premium color palette, creating an atmosphere of trust and elevated service.\n\n**Execution Blueprint:**\n1. Embrace Generous Whitespace: Every element will be afforded ample breathing room, creating a sense of spaciousness and allowing content to feel premium and unhurried.\n2. Typographic Hierarchy with Contrast: A classic serif for headlines will convey timeless elegance, paired with a clean, modern sans-serif for body text to ensure readability and a contemporary feel.\n3. Subtle Color Accents: A deep, sophisticated primary color will anchor the design, complemented by a muted background and a single, refined accent color used sparingly for calls to action and interactive elements.\n4. Balanced and Symmetrical Layouts: Prioritize balanced compositions that feel stable and ordered, reinforcing the brand's reliability and professional service.\n5. Refined Component Styling: Buttons and containers will feature minimal decoration, relying on subtle borders, soft shadows (if any), and ample padding to define their form, aligning with an elegant aesthetic.",
+    "layout": {
+      "grid": {
+        "margins": "Generous, typically 40px on desktop, 20px on mobile.",
+        "padding": "Generous, typically 40px on desktop, 20px on mobile, applied within containers.",
+        "compositionApproach": "Symmetrical 12-column grid with generous padding and margins.",
+        "spacing": {
+          "gaps": "Base unit: 8px. All grid gaps are 24px (3x base unit).",
+          "rows": "Flexible, based on content",
+          "columns": "12-column grid",
+          "compositionApproach": "Not specified"
+        }
+      },
+      "layoutDna": {
+        "contrastSpectrum": "Moderate, with clear distinction between background and content.",
+        "densitySpectrum": "Spacious, airy.",
+        "textVsImageEmphasis": "Balanced, with high-quality imagery supporting refined typography.",
+        "complexitySpectrum": "Minimalist, focusing on essential elements.",
+        "gridAlignmentSpectrum": "Symmetrical and balanced, with intentional use of negative space.",
+        "negativeSpaceUsage": "Extensive, to create a sense of luxury and focus."
+      },
+      "heroSectionLayout": "**The Elegant Reveal**\nComposition (Tailwind Spec): Main container (h-screen grid place-items-center p-8). Headline 'Fresh Flowers, Delivered with Care' (text-center font-fraunces text-6xl font-bold text-primary). Subheadline 'Nationwide delivery within 2 hours, personalized card designs.' (text-center font-roboto text-lg text-secondary mt-4).\nSignature Hook (Framer Motion Spec): Parent `motion.div` with `initial={{ opacity: 0 }}` and `animate={{ opacity: 1 }}`. Headline `motion.h1` uses `variants` with `transition: { staggerChildren: 0.05 }`. Each `motion.span` (for letters) has a variant with `initial={{ opacity: 0, y: 10 }}` and `animate={{ opacity: 1, y: 0 }}`. Subheadline fades in after headline."
+    },
+    "components": {
+      "images": "Layout Role: Integrated within content flow, often full-width or aligned with text columns. | Gallery Type: Standard grid layouts for product listings, with a focus on clean presentation. Hero images are full-bleed or large, impactful.",
+      "buttons": "Primary: background-color: #E91E63, color: #FFFFFF, border-radius: 8px, padding: 12px 24px, font-weight: 500. Secondary: background-color: transparent, color: #112121, border: 1px solid #112121, border-radius: 8px, padding: 12px 24px, font-weight: 500.",
+      "containers": "Method: Whitespace, Style: 80px vertical margin between sections. Inner containers use 40px padding on all sides. Subtle background color variations for distinct sections."
+    },
+    "palette": {
+      "colors": {
+        "customColors": [
+          {
+            "name": "accent",
+            "value": "#E91E63"
+          },
+          {
+            "name": "accentForeground",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "destructive",
+            "value": "#dc3545"
+          },
+          {
+            "name": "destructiveForeground",
+            "value": "#FFFFFF"
+          }
+        ],
+        "background": "#F8F9FA",
+        "secondary": "#667085",
+        "foreground": "#112121",
+        "secondaryForeground": "#FFFFFF",
+        "primaryForeground": "#FFFFFF",
+        "primary": "#112121"
+      },
+      "paletteUsageGuide": "The primary color (#112121) is for key text elements and structural accents. The background (#F8F9FA) is a soft, off-white to provide a clean canvas. The secondary color (#667085) is for less critical text or subtle UI elements. The accent color (#E91E63) is reserved for calls-to-action, links, and highlights to draw attention without overwhelming the design. Ensure high contrast for foreground elements on their respective backgrounds.",
+      "paletteAccessibilityNotes": "The primary color (#112121) has sufficient contrast against the background (#F8F9FA) and primaryForeground (#FFFFFF). The accent color (#E91E63) has sufficient contrast against the background (#F8F9FA) and accentForeground (#FFFFFF). Ensure all text elements meet WCAG AA contrast ratios."
+    },
+    "typography": {
+      "headings": {
+        "font": {
+          "fontFamily": "fraunces",
+          "role": "headings",
+          "fontJustification": ""
+        },
+        "headingsAccessibilityNotes": "Ensure headings are semantically correct and have adequate size and line height for legibility.",
+        "headingsSimilarFonts": [],
+        "headingsUsageGuide": "Use for all major headings (H1, H2, H3) to establish a clear, elegant hierarchy. Ensure sufficient size and weight for readability."
+      },
+      "paragraphs": {
+        "font": {
+          "fontFamily": "roboto",
+          "role": "paragraphs",
+          "fontJustification": ""
+        },
+        "paragraphsUsageGuide": "Use for all body text, descriptions, and longer content blocks. Maintain consistent line height and letter spacing for optimal readability.",
+        "paragraphsSimilarFonts": [],
+        "paragraphsAccessibilityNotes": "Paragraph text should be at least 16px with adequate line height (1.5-1.7) and line length (40-75 characters) for comfortable reading."
+      },
+      "customFontFamilies": {},
+      "fontSizes": [
+        {
+          "name": "xs",
+          "size": "0.75rem",
+          "lineHeight": "1.25",
+          "letterSpacing": "0.02em",
+          "fontWeight": "300"
+        },
+        {
+          "name": "sm",
+          "size": "0.875rem",
+          "lineHeight": "1.3",
+          "letterSpacing": "0.02em",
+          "fontWeight": "400"
+        },
+        {
+          "name": "base",
+          "size": "1rem",
+          "lineHeight": "1.5",
+          "letterSpacing": "0.02em",
+          "fontWeight": "400"
+        },
+        {
+          "name": "lg",
+          "size": "1.125rem",
+          "lineHeight": "1.4",
+          "letterSpacing": "0.02em",
+          "fontWeight": "400"
+        },
+        {
+          "name": "xl",
+          "size": "1.25rem",
+          "lineHeight": "1.4",
+          "letterSpacing": "0.02em",
+          "fontWeight": "500"
+        },
+        {
+          "name": "2xl",
+          "size": "1.5rem",
+          "lineHeight": "1.3",
+          "letterSpacing": "0.01em",
+          "fontWeight": "500"
+        },
+        {
+          "name": "3xl",
+          "size": "1.875rem",
+          "lineHeight": "1.2",
+          "letterSpacing": "0.01em",
+          "fontWeight": "600"
+        },
+        {
+          "name": "4xl",
+          "size": "2.25rem",
+          "lineHeight": "1.15",
+          "letterSpacing": "0.005em",
+          "fontWeight": "600"
+        },
+        {
+          "name": "5xl",
+          "size": "3rem",
+          "lineHeight": "1.1",
+          "letterSpacing": "0.005em",
+          "fontWeight": "700"
+        },
+        {
+          "name": "6xl",
+          "size": "3.75rem",
+          "lineHeight": "1.05",
+          "letterSpacing": "0.002em",
+          "fontWeight": "700"
+        },
+        {
+          "name": "7xl",
+          "size": "4.5rem",
+          "lineHeight": "1.02",
+          "letterSpacing": "0.001em",
+          "fontWeight": "800"
+        },
+        {
+          "name": "8xl",
+          "size": "6rem",
+          "lineHeight": "1",
+          "letterSpacing": "0",
+          "fontWeight": "800"
+        },
+        {
+          "name": "9xl",
+          "size": "8rem",
+          "lineHeight": "1",
+          "letterSpacing": "0",
+          "fontWeight": "900"
+        }
+      ],
+      "welcomeSectionTypography": {
+        "placement": "Centered, prominent display.",
+        "implementation": "Large, elegant headline using 'fraunces' font, potentially with a subtle letter-spacing adjustment. Body text below using 'roboto' font, well-spaced for readability."
+      }
+    },
+    "originImagesUrls": []
+  },
+  "attachments": {
+    "contentImagesUrls": [],
+    "inspirationImagesUrls": [
+      "https://wixmp-c562ea68f10846b458285ce5.wixmp.com/scraped-screenshots/screenshot-1780587775270.webp"
+    ]
+  },
+  "status": "READY",
+  "plan": "\n\n```json\n{\n  \"sections\": [\n    {\n      \"id\": \"overview\",\n      \"title\": \"## Overview\",\n      \"content\": \"This plan creates a flower shop website that showcases floral products across multiple categories, allows customers to browse and filter arrangements, and provides essential business information including delivery details and contact options.\"\n    },\n    {\n      \"id\": \"key-features\",\n      \"title\": \"## Key features\",\n      \"content\": \"- **View Product Listing**: Browse all available floral arrangements and products across different categories.\\n- **Filter Products**: Filter products by category, occasion, or price range to find the perfect arrangement.\\n- **View Product Details**: See detailed information about each floral product including images, descriptions, and pricing.\\n- **View About Information**: Learn about the shop's commitment to fresh flowers, two-hour delivery, and free card design services.\\n- **View Contact Information**: Access shop contact details, delivery information, and customer service options.\",\n      \"metadata\": [\n        { \"id\": \"view-product-listing\", \"name\": \"View Product Listing\" },\n        { \"id\": \"filter-products\", \"name\": \"Filter Products\" },\n        { \"id\": \"view-product-details\", \"name\": \"View Product Details\" },\n        { \"id\": \"view-about-information\", \"name\": \"View About Information\" },\n        { \"id\": \"view-contact-information\", \"name\": \"View Contact Information\" }\n      ]\n    },\n    {\n      \"id\": \"structure\",\n      \"title\": \"## Structure\",\n      \"content\": \"- **Header (Reusable)**: Contains site logo, navigation menu with links to Home, Products, About, and Contact pages, and search functionality.\\n- **Home Page**: Features hero section highlighting two-hour delivery and fresh flowers, showcases featured product categories, and displays customer testimonials.\\n- **Products Page**: Displays complete product catalog with filtering options by category (Birthday, Opening, Sympathy, etc.) and shows product grid with images and prices.\\n- **About Page**: Presents shop story, quality commitment, delivery guarantee information, and service highlights including free card design.\\n- **Contact Page**: Shows contact form, shop address, phone number, email, operating hours, and delivery coverage information.\\n- **Footer (Reusable)**: Includes quick links to main pages, contact information, social media links, and delivery policy details.\"\n    }\n  ],\n  \"apps\": [\n    {\n      \"id\": \"wix-cms\",\n      \"keyFeatures\": [\n        { \"id\": \"view-product-listing\", \"name\": \"View Product Listing\" },\n        { \"id\": \"filter-products\", \"name\": \"Filter Products\" },\n        { \"id\": \"view-product-details\", \"name\": \"View Product Details\" },\n        { \"id\": \"view-about-information\", \"name\": \"View About Information\" },\n        { \"id\": \"view-contact-information\", \"name\": \"View Contact Information\" }\n      ]\n    }\n  ],\n  \"version\": \"4.0.1\"\n}\n```"
+}
