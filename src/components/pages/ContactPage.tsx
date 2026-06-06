@@ -1,10 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { AppRouterProps } from '@/entities';
+import { useLanguage } from '@/lib/LanguageContext';
+import { getTranslation } from '@/lib/i18n';
 
 const AnimatedElement: React.FC<{children: React.ReactNode; className?: string; delay?: number}> = ({ children, className, delay = 0 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,7 +48,8 @@ const AnimatedElement: React.FC<{children: React.ReactNode; className?: string; 
   );
 };
 
-export default function ContactPage() {
+export default function ContactPage(props: AppRouterProps) {
+  const { language } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -55,8 +59,7 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.');
+    alert(getTranslation('contact.success', language, props));
     setFormData({ name: '', email: '', phone: '', message: '' });
   };
 
@@ -67,43 +70,43 @@ export default function ContactPage() {
     });
   };
 
-  const contactInfo = [
+  const contactInfo = useMemo(() => [
     {
       icon: Phone,
-      title: 'Điện thoại',
-      details: ['1900 xxxx', 'Hotline: 0909 xxx xxx'],
-      action: 'tel:1900xxxx'
+      title: getTranslation('contact.phoneLabel', language, props),
+      details: [getTranslation('footer.phoneTxt', language, props)],
+      action: `tel:${getTranslation('footer.phoneTxt', language, props)}`
     },
     {
       icon: Mail,
-      title: 'Email',
-      details: ['info@shophoacomay.vn', 'support@shophoacomay.vn'],
-      action: 'mailto:info@shophoacomay.vn'
+      title: getTranslation('contact.emailLabel', language, props),
+      details: [getTranslation('footer.emailTxt', language, props)],
+      action: `mailto:${getTranslation('footer.emailTxt', language, props)}`
     },
     {
       icon: MapPin,
-      title: 'Địa chỉ',
-      details: ['Hệ thống cửa hàng toàn quốc', '63 tỉnh thành'],
+      title: getTranslation('contact.addressLabel', language, props),
+      details: [getTranslation('hp.flower.features.t4', language, props), getTranslation('hp.flower.features.d4', language, props)],
       action: null
     },
     {
       icon: Clock,
-      title: 'Giờ làm việc',
-      details: ['Thứ 2 - Chủ nhật', '8:00 - 22:00'],
+      title: getTranslation('contact.workingHours', language, props),
+      details: [getTranslation('footer.working_days', language, props), getTranslation('footer.working_hours', language, props)],
       action: null
     }
-  ];
+  ], [language, props]);
 
-  const deliveryAreas = [
+  const deliveryAreas = useMemo(() => [
     {
-      city: 'TP. Hồ Chí Minh',
-      time: 'Giao trong 2 giờ',
-      coverage: 'Tất cả quận huyện'
+      city: getTranslation('contact.area.hcm.city', language, props),
+      time: getTranslation('contact.area.hcm.time', language, props),
+      coverage: getTranslation('contact.area.hcm.coverage', language, props)
     },
     {
-      city: 'Hà Nội',
-      time: 'Giao trong 2 giờ',
-      coverage: 'Tất cả quận huyện'
+      city: getTranslation('contact.area.hn.city', language, props),
+      time: getTranslation('contact.area.hn.time', language, props),
+      coverage: getTranslation('contact.area.hn.coverage', language, props)
     },
     {
       city: 'Đà Nẵng',
@@ -115,21 +118,21 @@ export default function ContactPage() {
       time: 'Giao trong ngày',
       coverage: 'Theo khu vực'
     }
-  ];
+  ], [language, props]);
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header {...props} />
 
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-gradient-to-br from-accent/10 via-background to-secondary/5">
         <div className="container mx-auto px-4">
           <AnimatedElement className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-              Liên hệ với chúng tôi
+              {getTranslation('contact.hero.shop_title', language, props)}
             </h1>
             <p className="text-lg md:text-xl font-paragraph text-secondary">
-              Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn 24/7
+              {getTranslation('contact.hero.shop_subtitle', language, props)}
             </p>
           </AnimatedElement>
         </div>
@@ -158,7 +161,7 @@ export default function ContactPage() {
                       href={info.action}
                       className="inline-block mt-3 text-sm font-paragraph text-accent hover:underline"
                     >
-                      Liên hệ ngay
+                      {getTranslation('contact.btn.contact_now', language, props)}
                     </a>
                   )}
                 </div>
@@ -176,12 +179,12 @@ export default function ContactPage() {
             <AnimatedElement>
               <div className="bg-background rounded-2xl shadow-lg p-8">
                 <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-6">
-                  Gửi tin nhắn cho chúng tôi
+                  {getTranslation('contact.form.send_msg', language, props)}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label className="block text-sm font-paragraph font-semibold text-primary mb-2">
-                      Họ và tên *
+                      {getTranslation('contact.formName', language, props)}
                     </label>
                     <Input
                       type="text"
@@ -189,14 +192,14 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      placeholder="Nhập họ và tên của bạn"
+                      placeholder={getTranslation('contact.placeholderName', language, props)}
                       className="w-full"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-paragraph font-semibold text-primary mb-2">
-                      Email *
+                      {getTranslation('contact.formEmail', language, props)}
                     </label>
                     <Input
                       type="email"
@@ -204,14 +207,14 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      placeholder="email@example.com"
+                      placeholder={getTranslation('contact.placeholderEmail', language, props)}
                       className="w-full"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-paragraph font-semibold text-primary mb-2">
-                      Số điện thoại *
+                      {getTranslation('contact.formPhone', language, props)}
                     </label>
                     <Input
                       type="tel"
@@ -219,21 +222,21 @@ export default function ContactPage() {
                       value={formData.phone}
                       onChange={handleChange}
                       required
-                      placeholder="0909 xxx xxx"
+                      placeholder={getTranslation('contact.placeholderPhone', language, props)}
                       className="w-full"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-paragraph font-semibold text-primary mb-2">
-                      Nội dung *
+                      {getTranslation('contact.formMessage', language, props)}
                     </label>
                     <Textarea
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      placeholder="Nhập nội dung tin nhắn của bạn..."
+                      placeholder={getTranslation('contact.placeholderMessage', language, props)}
                       rows={5}
                       className="w-full"
                     />
@@ -245,7 +248,7 @@ export default function ContactPage() {
                     className="w-full bg-accent hover:bg-accent/90 text-white transition-all duration-200 hover:scale-[1.02]"
                   >
                     <Send className="mr-2 h-5 w-5" />
-                    Gửi tin nhắn
+                    {getTranslation('contact.sendButton', language, props)}
                   </Button>
                 </form>
               </div>
@@ -256,7 +259,7 @@ export default function ContactPage() {
               <div className="space-y-6">
                 <div className="bg-background rounded-2xl shadow-lg p-8">
                   <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-6">
-                    Khu vực giao hàng
+                    {getTranslation('contact.delivery.title', language, props)}
                   </h2>
                   <div className="space-y-4">
                     {deliveryAreas.map((area, index) => (
@@ -282,24 +285,24 @@ export default function ContactPage() {
 
                 <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-6">
                   <h3 className="text-lg font-heading font-bold text-primary mb-3">
-                    Cam kết giao hàng
+                    {getTranslation('contact.commit.title', language, props)}
                   </h3>
                   <ul className="space-y-2 text-sm font-paragraph text-secondary">
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">✓</span>
-                      <span>Giao hàng đúng giờ theo yêu cầu</span>
+                      <span>{getTranslation('contact.commit.item1', language, props)}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">✓</span>
-                      <span>Hoa tươi 100%, không héo úa</span>
+                      <span>{getTranslation('contact.commit.item2', language, props)}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">✓</span>
-                      <span>Miễn phí thiết kế thiệp chúc mừng</span>
+                      <span>{getTranslation('contact.commit.item3', language, props)}</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">✓</span>
-                      <span>Hỗ trợ 24/7 qua hotline</span>
+                      <span>{getTranslation('contact.commit.item4', language, props)}</span>
                     </li>
                   </ul>
                 </div>
@@ -314,7 +317,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4">
           <AnimatedElement className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-              Câu hỏi thường gặp
+              {getTranslation('contact.faq.title', language, props)}
             </h2>
             <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           </AnimatedElement>
@@ -323,10 +326,10 @@ export default function ContactPage() {
             <AnimatedElement delay={100}>
               <div className="bg-secondary/5 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
                 <h3 className="text-lg font-paragraph font-bold text-primary mb-2">
-                  Thời gian giao hàng là bao lâu?
+                  {getTranslation('contact.faq.q1', language, props)}
                 </h3>
                 <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                  Chúng tôi cam kết giao hàng trong vòng 2 giờ tại TP.HCM và Hà Nội. Các tỉnh thành khác sẽ được giao trong ngày hoặc theo thỏa thuận.
+                  {getTranslation('contact.faq.a1', language, props)}
                 </p>
               </div>
             </AnimatedElement>
@@ -334,10 +337,10 @@ export default function ContactPage() {
             <AnimatedElement delay={200}>
               <div className="bg-secondary/5 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
                 <h3 className="text-lg font-paragraph font-bold text-primary mb-2">
-                  Có thể đặt hoa vào giờ nào?
+                  {getTranslation('contact.faq.q2', language, props)}
                 </h3>
                 <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                  Chúng tôi nhận đặt hàng 24/7 qua website và hotline. Thời gian làm việc của cửa hàng là từ 8:00 đến 22:00 hàng ngày.
+                  {getTranslation('contact.faq.a2', language, props)}
                 </p>
               </div>
             </AnimatedElement>
@@ -345,10 +348,10 @@ export default function ContactPage() {
             <AnimatedElement delay={300}>
               <div className="bg-secondary/5 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
                 <h3 className="text-lg font-paragraph font-bold text-primary mb-2">
-                  Có được thiết kế thiệp miễn phí không?
+                  {getTranslation('contact.faq.q3', language, props)}
                 </h3>
                 <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                  Có, chúng tôi cung cấp dịch vụ thiết kế thiệp chúc mừng hoàn toàn miễn phí cho mọi đơn hàng. Bạn chỉ cần cung cấp nội dung lời chúc.
+                  {getTranslation('contact.faq.a3', language, props)}
                 </p>
               </div>
             </AnimatedElement>
@@ -356,10 +359,10 @@ export default function ContactPage() {
             <AnimatedElement delay={400}>
               <div className="bg-secondary/5 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
                 <h3 className="text-lg font-paragraph font-bold text-primary mb-2">
-                  Làm sao để đảm bảo hoa tươi?
+                  {getTranslation('contact.faq.q4', language, props)}
                 </h3>
                 <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                  Hoa của chúng tôi được nhập khẩu và chọn lọc kỹ càng mỗi ngày. Chúng tôi cam kết 100% hoa tươi, không héo úa khi giao đến tay khách hàng.
+                  {getTranslation('contact.faq.a4', language, props)}
                 </p>
               </div>
             </AnimatedElement>
@@ -367,7 +370,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer {...props} />
     </div>
   );
 }

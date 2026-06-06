@@ -1,9 +1,9 @@
 // WI-HPI
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { BaseCrudService } from '@/integrations';
-import { FloralProducts } from '@/entities';
+import { AppRouterProps, FloralProducts, Products, WPPage } from '@/entities';
 import { useCart, useCurrency, formatPrice, DEFAULT_CURRENCY } from '@/integrations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -23,14 +23,17 @@ import {
   Star,
   Quote
 } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { getContent, getTranslation } from '@/lib/i18n';
+import { formatCurrency } from '@/lib/stringUtils';
 
 // --- Animation Variants ---
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -38,14 +41,25 @@ const staggerContainer = {
   }
 };
 
-export default function HomePage() {
+export default function HomePage(props: AppRouterProps) {
+  const { language } = useLanguage();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<FloralProducts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { addingItemId, actions: cartActions } = useCart();
+  const { addingItemId, actions } = useCart(language);
   const { currency } = useCurrency();
   const [carouselIndex, setCarouselIndex] = useState(0);
-
+  const link_products = getContent(props.pages, 'products', language);
+  const link_contact = getContent(props.pages, 'contact', language);
+  const link_about = getContent(props.pages, 'about', language);
+  const handleAddToCart = async (product: Products) => {
+    product.collectionId = 'products';
+    product.quantity = 1;
+    await actions.addToCart(product);
+  };
+  
+  const dt_products = props.data_products;
+  const sampleProducts: Products[] = useMemo(() => dt_products, [language, props]);
+  const [products, setProducts] = useState<Products[]>(sampleProducts);
   useEffect(() => {
     loadProducts();
   }, []);
@@ -53,8 +67,16 @@ export default function HomePage() {
   const loadProducts = async () => {
     try {
       setIsLoading(true);
-      const result = await BaseCrudService.getAll<FloralProducts>('floralproducts', {}, { limit: 12 });
-      setProducts(result.items || []);
+
+      const totalItems = sampleProducts.length;
+      const skip = 0, limit = 12;
+      const currentSlice = sampleProducts.slice(skip, skip + limit);
+
+      if (skip === 0) {
+        setProducts(currentSlice);
+      } else {
+        setProducts(prev => [...prev, ...currentSlice]);
+      }
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -63,41 +85,41 @@ export default function HomePage() {
   };
 
   // Static Data based on scraped markdown
-  const features = [
-    { icon: Clock, title: 'Giao hàng đúng giờ', description: 'Cam kết giao đúng giờ' },
-    { icon: FileText, title: 'Xuất hoá đơn VAT', description: 'Xuất hoá đơn VAT 8% trong ngày' },
-    { icon: Award, title: 'Cam kết chất lượng', description: 'Hoa tươi mỗi ngày không héo úa' },
-    { icon: MapPin, title: 'Hệ thống toàn quốc', description: 'Trải dài khắp Việt Nam' }
-  ];
+  const features = useMemo(() => [
+    { icon: Clock, title: getTranslation('hp.flower.features.t1', language, props), description: getTranslation('hp.flower.features.d1', language, props) },
+    { icon: FileText, title: getTranslation('hp.flower.features.t2', language, props), description: getTranslation('hp.flower.features.d2', language, props) },
+    { icon: Award, title: getTranslation('hp.flower.features.t3', language, props), description: getTranslation('hp.flower.features.d3', language, props) },
+    { icon: MapPin, title: getTranslation('hp.flower.features.t4', language, props), description: getTranslation('hp.flower.features.d4', language, props) }
+  ], [language, props]);
 
-  const categories = [
-    { name: 'Hoa sinh nhật', image: 'https://static.wixstatic.com/media/73be94_9672fa64e49d4f608a805e2f11963890~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa khai trương', image: 'https://static.wixstatic.com/media/73be94_69d5984737ec42df9fce925d48c9694b~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa chia buồn', image: 'https://static.wixstatic.com/media/73be94_8dbfa42b182f4fbf9d3f669bc91fb123~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa chúc mừng', image: 'https://static.wixstatic.com/media/73be94_4ae9b4bdcda549f19170c56f60bbb996~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa khai giảng', image: 'https://static.wixstatic.com/media/73be94_f26811735fec479ca2a3496d6f3eea03~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa tặng mẹ', image: 'https://static.wixstatic.com/media/73be94_0e18476fc10349eb961f78dd6d5f18cb~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Hoa bó đẹp', image: 'https://static.wixstatic.com/media/73be94_145bb6ba0a7d4e78adb30dd28143442e~mv2.png?originWidth=384&originHeight=384' },
-    { name: 'Giỏ hoa', image: 'https://static.wixstatic.com/media/73be94_5ee133c53b75426582ae1effdf0320de~mv2.png?originWidth=384&originHeight=384' },
-  ];
+  const categories = useMemo(() => [
+    { key: 'cat.birthday', name: getTranslation('cat.birthday', language, props), image: 'https://static.wixstatic.com/media/73be94_9672fa64e49d4f608a805e2f11963890~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.opening', name: getTranslation('cat.opening', language, props), image: 'https://static.wixstatic.com/media/73be94_69d5984737ec42df9fce925d48c9694b~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.funeral', name: getTranslation('cat.funeral', language, props), image: 'https://static.wixstatic.com/media/73be94_8dbfa42b182f4fbf9d3f669bc91fb123~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.congrats', name: getTranslation('cat.congrats', language, props), image: 'https://static.wixstatic.com/media/73be94_4ae9b4bdcda549f19170c56f60bbb996~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.school', name: getTranslation('cat.school', language, props), image: 'https://static.wixstatic.com/media/73be94_f26811735fec479ca2a3496d6f3eea03~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.mother', name: getTranslation('cat.mother', language, props), image: 'https://static.wixstatic.com/media/73be94_0e18476fc10349eb961f78dd6d5f18cb~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.bouquet', name: getTranslation('cat.bouquet', language, props), image: 'https://static.wixstatic.com/media/73be94_145bb6ba0a7d4e78adb30dd28143442e~mv2.png?originWidth=384&originHeight=384' },
+    { key: 'cat.basket', name: getTranslation('cat.basket', language, props), image: 'https://static.wixstatic.com/media/73be94_5ee133c53b75426582ae1effdf0320de~mv2.png?originWidth=384&originHeight=384' },
+  ], [language, props]);
 
-  const testimonials = [
-    { name: 'Nguyễn Thị A', text: 'Hoa rất tươi và đẹp, giao hàng đúng giờ. Sẽ ủng hộ shop dài dài.', rating: 5 },
-    { name: 'Trần Văn B', text: 'Dịch vụ chăm sóc khách hàng tuyệt vời, tư vấn nhiệt tình chọn được bó hoa ưng ý.', rating: 5 },
-    { name: 'Lê Hoàng C', text: 'Thiết kế thiệp miễn phí rất đẹp và ý nghĩa. Người nhận rất vui.', rating: 5 },
-  ];
+  const testimonials = useMemo(() => [
+    { name: getTranslation('testi.name.a', language, props), text: getTranslation('testi.text.a', language, props), rating: 5 },
+    { name: getTranslation('testi.name.b', language, props), text: getTranslation('testi.text.b', language, props), rating: 5 },
+    { name: getTranslation('testi.name.c', language, props), text: getTranslation('testi.text.c', language, props), rating: 5 },
+  ], [language, props]);
 
   // Carousel Logic
   const itemsPerSlide = 4;
   const maxIndex = Math.max(0, products.length - itemsPerSlide);
   const visibleProducts = products.slice(carouselIndex, carouselIndex + itemsPerSlide);
   
-  const handleNext = () => setCarouselIndex(prev => Math.min(prev + 1, maxIndex));
-  const handlePrev = () => setCarouselIndex(prev => Math.max(prev - 1, 0));
+  const handleNext = () => setCarouselIndex(prev => Math.min(prev + itemsPerSlide, maxIndex));
+  const handlePrev = () => setCarouselIndex(prev => Math.max(prev - itemsPerSlide, 0));
 
   return (
     <div className="min-h-screen bg-background font-paragraph text-primary overflow-x-hidden">
-      <Header />
+      <Header {...props}/>
 
       {/* HERO SECTION */}
       <section className="relative min-h-[80vh] flex items-center bg-accent/5 overflow-hidden">
@@ -116,39 +138,39 @@ export default function HomePage() {
               className="max-w-2xl"
             >
               <motion.div variants={fadeInUp} className="inline-block mb-4 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20">
-                <span className="text-accent font-semibold text-sm tracking-wide uppercase">Shop Hoa Cỏ May</span>
+                <span className="text-accent font-semibold text-sm tracking-wide uppercase">{getTranslation('hp.flower.hero.badge', language, props)}</span>
               </motion.div>
               
               <motion.h1 variants={fadeInUp} className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-primary mb-6 leading-[1.1]">
-                Hoa Tươi <br/>
-                <span className="text-accent">Mỗi Ngày</span>
+                {getTranslation('hp.flower.hero.title1', language, props)} <br/>
+                <span className="text-accent">{getTranslation('hp.flower.hero.title2', language, props)}</span>
               </motion.h1>
               
               <motion.p variants={fadeInUp} className="text-xl md:text-2xl font-heading font-medium text-secondary mb-6">
-                Giao Nhanh Trong 2 Giờ, Miễn Phí Thiết Kế Thiệp
+                {getTranslation('hp.flower.hero.promo', language, props)}
               </motion.p>
               
               <motion.p variants={fadeInUp} className="text-base md:text-lg text-secondary/80 mb-10 leading-relaxed max-w-lg">
-                Tại Shop Hoa Cỏ May, mỗi bông hoa đều mang trong mình một câu chuyện, một lời chúc và cảm xúc riêng biệt. Chúng tôi tin rằng hoa không chỉ để ngắm, mà còn là cách trao đi yêu thương một cách tinh tế nhất.
+                {getTranslation('hp.flower.hero.desc', language, props)}
               </motion.p>
               
               <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
                 <Button 
                   size="lg"
                   className="bg-accent hover:bg-accent/90 text-white rounded-full px-8 py-6 text-lg shadow-lg shadow-accent/20 transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                  onClick={() => navigate('/products')}
+                  onClick={() => navigate(link_products)}
                 >
-                  Xem sản phẩm
+                  {getTranslation('hp.flower.hero.btn1', language, props)}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button 
                   size="lg"
                   variant="outline"
                   className="rounded-full px-8 py-6 text-lg border-accent/20 text-primary hover:bg-accent/5 transition-all duration-300"
-                  onClick={() => navigate('/contact')}
+                  onClick={() => navigate(link_contact)}
                 >
                   <Phone className="mr-2 h-5 w-5 text-accent" />
-                  Tư vấn ngay
+                  {getTranslation('hp.flower.hero.btn2', language, props)}
                 </Button>
               </motion.div>
             </motion.div>
@@ -179,8 +201,8 @@ export default function HomePage() {
                     <Clock className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <p className="font-bold text-primary">Giao Tốc Độ</p>
-                    <p className="text-sm text-secondary">Trong vòng 2 giờ</p>
+                    <p className="font-bold text-primary">{getTranslation('hp.flower.hero.speed', language, props)}</p>
+                    <p className="text-sm text-secondary">{getTranslation('hp.flower.hero.time', language, props)}</p>
                   </div>
                 </div>
               </motion.div>
@@ -219,23 +241,23 @@ export default function HomePage() {
             </motion.div>
 
             <motion.div variants={fadeInUp} className="space-y-6">
-              <h2 className="text-sm font-bold text-accent uppercase tracking-wider">Về Chúng Tôi</h2>
+              <h2 className="text-sm font-bold text-accent uppercase tracking-wider">{getTranslation('hp.flower.about.label', language, props)}</h2>
               <h3 className="text-3xl md:text-4xl font-heading font-bold text-primary leading-tight">
-                Shop Hoa Cỏ May - Hệ Thống Hoa Tươi Trên Toàn Quốc
+                {getTranslation('hp.flower.about.title', language, props)}
               </h3>
               <div className="w-20 h-1 bg-accent rounded-full" />
               <p className="text-lg text-secondary leading-relaxed">
-                Dù là sinh nhật, khai trương, chúc mừng hay chỉ đơn giản là muốn ai đó mỉm cười – bạn đều có thể tìm thấy bó hoa phù hợp tại Hoa Cỏ May.
+                {getTranslation('hp.flower.about.p1', language, props)}
               </p>
               <p className="text-lg text-secondary leading-relaxed">
-                Hoa luôn tươi mới mỗi ngày, giao nhanh trong 2 giờ, tặng kèm thiệp miễn phí – để từng khoảnh khắc trao hoa đều trở nên thật trọn vẹn.
+                {getTranslation('hp.flower.about.p2', language, props)}
               </p>
               <Button 
                 variant="outline"
                 className="rounded-full border-accent text-accent hover:bg-accent hover:text-white transition-all duration-300 mt-4"
-                onClick={() => navigate('/about')}
+                onClick={() => navigate(link_about)}
               >
-                Tìm hiểu thêm
+                {getTranslation('hp.flower.about.btn', language, props)}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </motion.div>
@@ -285,7 +307,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-              Danh mục hoa nổi bật
+              {getTranslation('hp.flower.cats.title', language, props)}
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto rounded-full" />
           </motion.div>
@@ -297,10 +319,10 @@ export default function HomePage() {
             variants={staggerContainer}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
           >
-            {categories.map((category, index) => (
-              <motion.div key={index} variants={fadeInUp}>
+            {categories.map((category) => (
+              <motion.div key={category.key} variants={fadeInUp}>
                 <Link 
-                  to="/products" 
+                  to={link_products} 
                   className="block group text-center"
                 >
                   <div className="relative overflow-hidden rounded-3xl shadow-sm mb-4 aspect-square bg-accent/5">
@@ -323,9 +345,9 @@ export default function HomePage() {
             <Button 
               variant="outline"
               className="rounded-full border-accent/30 text-primary hover:bg-accent hover:text-white hover:border-accent transition-all duration-300"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate(link_products)}
             >
-              Xem tất cả danh mục
+              {getTranslation('hp.flower.cats.btn', language, props)}
             </Button>
           </div>
         </div>
@@ -344,10 +366,10 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-              Đặt hoa - Giao ngay trong 2 giờ
+              {getTranslation('hp.flower.prods.title', language, props)}
             </h2>
             <p className="text-lg text-secondary max-w-2xl mx-auto">
-              Hoa Cỏ May – Giao hoa tươi tận tay chỉ trong 2 giờ, gửi trọn yêu thương đến người bạn thương!
+              {getTranslation('hp.flower.prods.desc', language, props)}
             </p>
           </motion.div>
 
@@ -369,29 +391,29 @@ export default function HomePage() {
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                         className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full overflow-hidden border border-transparent hover:border-accent/10"
                       >
-                        <Link to={`/product/${product._id}`} className="relative overflow-hidden aspect-[4/5] block">
+                        <Link to={getContent(props.pages, 'product', language, Number(product._id))} className="relative overflow-hidden aspect-[4/5] block">
                           <Image
-                            src={product.itemImage || 'https://static.wixstatic.com/media/73be94_fda7a7c59bd14b8fb6c203bdc05d574a~mv2.png?originWidth=768&originHeight=960'}
-                            alt={product.itemName || 'Sản phẩm'}
+                            src={product.itemImage[language].src || 'https://static.wixstatic.com/media/73be94_fda7a7c59bd14b8fb6c203bdc05d574a~mv2.png?originWidth=768&originHeight=960'}
+                            alt={product.itemName[language] || 'Sản phẩm'}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                           {/* Quick add overlay */}
                           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <div className="bg-white text-primary px-6 py-2 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                              Xem chi tiết
+                              {getTranslation('hp.flower.prods.view', language, props)}
                             </div>
                           </div>
                         </Link>
                         
                         <div className="p-6 flex flex-col flex-grow">
-                          <Link to={`/product/${product._id}`}>
+                          <Link to={getContent(props.pages, 'products', language, Number(product._id))} className="hover:underline">
                             <h3 className="text-lg font-semibold text-primary mb-2 line-clamp-2 group-hover:text-accent transition-colors">
-                              {product.itemName}
+                              {product.itemName[language]}
                             </h3>
                           </Link>
                           <div className="mt-auto pt-4 flex items-center justify-between">
                             <p className="text-xl font-bold text-accent">
-                              {formatPrice(product.itemPrice || 0, currency ?? DEFAULT_CURRENCY)}
+                              {formatCurrency(product.itemPrice[language] || 0, product.itemCurrency[language] || DEFAULT_CURRENCY)}
                             </p>
                             <Button
                               size="icon"
@@ -399,7 +421,7 @@ export default function HomePage() {
                               disabled={addingItemId === product._id}
                               onClick={(e) => {
                                 e.preventDefault();
-                                cartActions.addToCart({ collectionId: 'floralproducts', itemId: product._id });
+                                handleAddToCart(product);
                               }}
                             >
                               {addingItemId === product._id ? <LoadingSpinner className="w-4 h-4" /> : <ShoppingBag className="w-5 h-5" />}
@@ -447,7 +469,7 @@ export default function HomePage() {
               </>
             ) : (
               <div className="text-center text-secondary py-12">
-                Không có sản phẩm nào.
+                {getTranslation('prods.noProducts', language, props)}
               </div>
             )}
           </div>
@@ -466,17 +488,17 @@ export default function HomePage() {
             className="text-center text-white max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">
-              Deal Hot Mỗi Ngày
+              {getTranslation('hp.flower.deal.title', language, props)}
             </h2>
             <p className="text-xl md:text-2xl mb-10 text-white/90">
-              Giảm 50K cho đơn hàng phát sinh đầu tiên
+              {getTranslation('hp.flower.deal.desc', language, props)}
             </p>
             <Button 
               size="lg"
               className="bg-white text-accent hover:bg-white/90 rounded-full px-10 py-6 text-lg font-bold shadow-xl transition-transform hover:scale-105"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate(link_products)}
             >
-              Xem sản phẩm ưu đãi
+              {getTranslation('hp.flower.deal.btn', language, props)}
             </Button>
           </motion.div>
         </div>
@@ -493,7 +515,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-              Đánh giá của khách hàng
+              {getTranslation('hp.flower.testi.title', language, props)}
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto rounded-full" />
           </motion.div>
@@ -545,10 +567,10 @@ export default function HomePage() {
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
             
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-6">
-              Hãy để Hoa Cỏ May gửi lời thương yêu thay bạn
+              {getTranslation('hp.flower.bottom.title', language, props)}
             </h2>
             <p className="text-lg text-secondary mb-10 max-w-2xl mx-auto">
-              Giao hàng miễn phí TP. Hồ Chí Minh & Hà Nội trong 2 giờ. Đặt hoa online ngay hôm nay!
+              {getTranslation('hp.flower.bottom.desc', language, props)}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -557,21 +579,21 @@ export default function HomePage() {
                 className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white rounded-full px-8 py-6 text-lg transition-transform hover:scale-105"
                 onClick={() => window.open('https://m.me/shophoacomay', '_blank')}
               >
-                Chat Messenger
+                {getTranslation('hp.flower.bottom.btn1', language, props)}
               </Button>
               <Button 
                 size="lg"
                 className="bg-accent hover:bg-accent/90 text-white rounded-full px-8 py-6 text-lg transition-transform hover:scale-105 shadow-lg shadow-accent/20"
-                onClick={() => navigate('/products')}
+                onClick={() => navigate(link_products)}
               >
-                Đặt hoa online
+                {getTranslation('hp.flower.bottom.btn2', language, props)}
               </Button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <Footer />
+      <Footer {...props} />
     </div>
   );
 }

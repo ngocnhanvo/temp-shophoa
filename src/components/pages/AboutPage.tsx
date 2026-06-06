@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Clock, Award, MapPin, Heart, Truck, Gift } from 'lucide-react';
+import { AppRouterProps } from '@/entities';
+import { useLanguage } from '@/lib/LanguageContext';
+import { getTranslation } from '@/lib/i18n';
 
 const AnimatedElement: React.FC<{children: React.ReactNode; className?: string; delay?: number}> = ({ children, className, delay = 0 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,52 +48,52 @@ const AnimatedElement: React.FC<{children: React.ReactNode; className?: string; 
   );
 };
 
-export default function AboutPage() {
+export default function AboutPage(props: AppRouterProps) {
   const navigate = useNavigate();
-
-  const values = [
+  const { language } = useLanguage();
+  const values = useMemo(() => [
     {
       icon: Heart,
-      title: 'Tận tâm',
-      description: 'Chúng tôi đặt trái tim vào từng bó hoa, mang đến sự chăm sóc tận tình cho khách hàng'
+      title: getTranslation('abt.flower.val1_t', language, props),
+      description: getTranslation('abt.flower.val1_d', language, props)
     },
     {
       icon: Award,
-      title: 'Chất lượng',
-      description: 'Cam kết hoa tươi mỗi ngày, không héo úa, luôn đảm bảo chất lượng cao nhất'
+      title: getTranslation('abt.flower.val2_t', language, props),
+      description: getTranslation('abt.flower.val2_d', language, props)
     },
     {
       icon: Truck,
-      title: 'Giao nhanh',
-      description: 'Giao hàng trong vòng 2 giờ, đúng giờ, đúng địa điểm theo yêu cầu'
+      title: getTranslation('abt.flower.val3_t', language, props),
+      description: getTranslation('abt.flower.val3_d', language, props)
     },
     {
       icon: Gift,
-      title: 'Miễn phí thiệp',
-      description: 'Thiết kế thiệp chúc mừng miễn phí, giúp lời chúc thêm ý nghĩa'
+      title: getTranslation('abt.flower.val4_t', language, props),
+      description: getTranslation('abt.flower.val4_d', language, props)
     }
-  ];
+  ], [language, props]);
 
-  const stats = [
-    { number: '10+', label: 'Năm kinh nghiệm' },
-    { number: '50K+', label: 'Khách hàng hài lòng' },
-    { number: '63', label: 'Tỉnh thành phủ sóng' },
-    { number: '100%', label: 'Hoa tươi mỗi ngày' }
-  ];
+  const stats = useMemo(() => [
+    { number: '10+', label: getTranslation('abt.flower.stat1_l', language, props) },
+    { number: '50K+', label: getTranslation('abt.flower.stat2_l', language, props) },
+    { number: '63', label: getTranslation('abt.flower.stat3_l', language, props) },
+    { number: '100%', label: getTranslation('abt.flower.stat4_l', language, props) }
+  ], [language, props]);
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header {...props} />
 
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-gradient-to-br from-accent/10 via-background to-secondary/5">
         <div className="container mx-auto px-4">
           <AnimatedElement className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-primary mb-6">
-              Về Shop Hoa Cỏ May
+              {getTranslation('abt.flower.title', language, props)}
             </h1>
             <p className="text-lg md:text-xl font-paragraph text-secondary leading-relaxed">
-              Hệ thống hoa tươi uy tín trên toàn quốc, mang đến những bó hoa tươi đẹp nhất cho mọi dịp đặc biệt trong cuộc sống
+              {getTranslation('abt.flower.hero_desc', language, props)}
             </p>
           </AnimatedElement>
         </div>
@@ -103,20 +106,20 @@ export default function AboutPage() {
             <AnimatedElement>
               <div className="space-y-6">
                 <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary">
-                  Câu chuyện của chúng tôi
+                  {getTranslation('abt.flower.story_title', language, props)}
                 </h2>
                 <p className="text-base md:text-lg font-paragraph text-secondary leading-relaxed">
-                  Tại Shop Hoa Cỏ May, mỗi bông hoa đều mang trong mình một câu chuyện, một lời chúc và cảm xúc riêng biệt. Chúng tôi tin rằng hoa không chỉ để ngắm, mà còn là cách trao đi yêu thương một cách tinh tế nhất.
+                  {getTranslation('abt.flower.story_p1', language, props)}
                 </p>
                 <p className="text-base md:text-lg font-paragraph text-secondary leading-relaxed">
-                  Với hơn 10 năm kinh nghiệm trong ngành hoa tươi, chúng tôi tự hào là đối tác tin cậy của hàng ngàn khách hàng trên toàn quốc. Từ những dịp sinh nhật, khai trương, đến những khoảnh khắc đặc biệt trong cuộc sống, Hoa Cỏ May luôn đồng hành cùng bạn.
+                  {getTranslation('abt.flower.story_p2', language, props)}
                 </p>
                 <Button 
                   size="lg"
                   className="bg-accent hover:bg-accent/90 text-white transition-all duration-200 hover:scale-[1.02]"
                   onClick={() => navigate('/products')}
                 >
-                  Khám phá sản phẩm
+                  {getTranslation('abt.flower.btn_explore', language, props)}
                 </Button>
               </div>
             </AnimatedElement>
@@ -158,7 +161,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <AnimatedElement className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-              Giá trị cốt lõi
+              {getTranslation('abt.flower.values_title', language, props)}
             </h2>
             <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           </AnimatedElement>
@@ -209,7 +212,7 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto">
             <AnimatedElement className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-                Cam kết của chúng tôi
+                {getTranslation('abt.flower.commit_title', language, props)}
               </h2>
               <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
             </AnimatedElement>
@@ -223,10 +226,10 @@ export default function AboutPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-heading font-bold text-primary mb-2">
-                        Giao hàng đúng giờ
+                        {getTranslation('hp.flower.features.t1', language, props)}
                       </h3>
                       <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                        Cam kết giao hoa trong vòng 2 giờ tại TP.HCM và Hà Nội, đúng giờ theo yêu cầu của khách hàng
+                        {getTranslation('abt.flower.commit.d1', language, props)}
                       </p>
                     </div>
                   </div>
@@ -241,10 +244,10 @@ export default function AboutPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-heading font-bold text-primary mb-2">
-                        Hoa tươi 100%
+                        {getTranslation('hp.flower.features.t3', language, props)}
                       </h3>
                       <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                        Hoa được nhập khẩu và chọn lọc kỹ càng mỗi ngày, đảm bảo độ tươi và chất lượng cao nhất
+                        {getTranslation('abt.flower.commit.d2', language, props)}
                       </p>
                     </div>
                   </div>
@@ -259,10 +262,10 @@ export default function AboutPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-heading font-bold text-primary mb-2">
-                        Phủ sóng toàn quốc
+                        {getTranslation('hp.flower.features.t4', language, props)}
                       </h3>
                       <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                        Hệ thống cửa hàng và đối tác trải dài 63 tỉnh thành, sẵn sàng phục vụ mọi lúc mọi nơi
+                        {getTranslation('abt.flower.commit.d3', language, props)}
                       </p>
                     </div>
                   </div>
@@ -277,10 +280,10 @@ export default function AboutPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-heading font-bold text-primary mb-2">
-                        Thiệp miễn phí
+                        {getTranslation('abt.flower.val4_t', language, props)}
                       </h3>
                       <p className="text-sm font-paragraph text-secondary leading-relaxed">
-                        Thiết kế thiệp chúc mừng miễn phí theo yêu cầu, giúp lời chúc thêm ý nghĩa và cảm động
+                        {getTranslation('abt.flower.commit.d4', language, props)}
                       </p>
                     </div>
                   </div>
@@ -297,10 +300,10 @@ export default function AboutPage() {
           <AnimatedElement>
             <div className="max-w-3xl mx-auto text-center bg-background rounded-3xl shadow-xl p-8 md:p-12">
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
-                Sẵn sàng đặt hoa?
+                {getTranslation('abt.flower.cta_title', language, props)}
               </h2>
               <p className="text-base md:text-lg font-paragraph text-secondary mb-8">
-                Hãy để chúng tôi giúp bạn trao đi yêu thương qua những bó hoa tươi đẹp nhất
+                {getTranslation('abt.flower.cta_desc', language, props)}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -308,7 +311,7 @@ export default function AboutPage() {
                   className="bg-accent hover:bg-accent/90 text-white px-8 transition-all duration-200 hover:scale-[1.02]"
                   onClick={() => navigate('/products')}
                 >
-                  Xem sản phẩm
+                  {getTranslation('hp.flower.hero.btn1', language, props)}
                 </Button>
                 <Button 
                   size="lg"
@@ -316,7 +319,7 @@ export default function AboutPage() {
                   className="border-accent text-accent hover:bg-accent hover:text-white transition-all duration-200 hover:scale-[1.02]"
                   onClick={() => navigate('/contact')}
                 >
-                  Liên hệ ngay
+                  {getTranslation('contact.btn.contact_now', language, props)}
                 </Button>
               </div>
             </div>
@@ -324,7 +327,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer {...props} />
     </div>
   );
 }

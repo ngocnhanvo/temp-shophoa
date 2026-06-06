@@ -1,28 +1,240 @@
 ---
-import { SEO } from '@wix/seo/components';
-import { loadSEOTagsServiceConfig } from '@wix/seo/services';
-import { Head } from "@/components/Head";
+import { Head, HeadProps } from "@/components/Head";
 import AppRouter from "@/components/Router";
-import "@wix/wix-vibe-plugins/plugins-vars.css";
-import "@wix/wix-vibe-plugins/plugins-theme.css";
 import "@/styles/global.css";
+import { generateAndSaveSitemap } from "@/lib/wordpress/sitemap";
+import { AppRouterProps, Pages, Products } from "@/entities";
+import { getInfo } from "@/lib/wordpress/thongtinchung";
+import { getPages } from "@/lib/wordpress/pages";
+import { replacePlaceholders } from "@/lib/stringUtils";
+import { returnLang } from "@/lib/LanguageContext";
+import {PageTransition}  from '@/components/PageTransition';
+import { getProducts } from "@/lib/wordpress/products";
 
-const seoTagsServiceConfig = await loadSEOTagsServiceConfig({
-  pageUrl: Astro.url.href,
-  itemData: {
-    pageName: 'Home',
+export const WC_URL_CLIENT = import.meta.env.WC_URL_CLIENT || process.env.WC_URL_CLIENT;
+export const WC_URL = import.meta.env.WC_URL || process.env.WC_URL;
+export const data_info = (await getInfo())[0];
+export const data_pages = await getPages(data_info[0]);
+export const companyName = data_info.tencongty;
+export let pages: Pages[] = [
+  {
+    key: 'home',
+    lang: 'vi',
+    slug: '',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    label: 'Trang chủ',
+    action: 'HomePage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: false
   },
-});
----
+  {
+    key: 'home',
+    lang: 'vi',
+    slug: 'trang-chu',
+    label: 'Trang chủ',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'HomePage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'home',
+    lang: 'en',
+    slug: 'home',
+    label: 'Home',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'HomePage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'about',
+    lang: 'vi',
+    slug: 'gioi-thieu',
+    label: 'Giới thiệu',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'AboutPage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'about',
+    lang: 'en',
+    slug: 'about',
+    label: 'About',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'AboutPage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'contact',
+    lang: 'vi',
+    slug: 'lien-he',
+    label: 'Liên hệ',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'ContactPage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'contact',
+    lang: 'en',
+    slug: 'contact',
+    label: 'Contact',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'ContactPage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'products',
+    lang: 'vi',
+    slug: 'san-pham', // Trang chủ mặc định (vi)
+    label: 'Sản phẩm',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'ProductsPage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'products',
+    lang: 'en',
+    slug: 'products', // Trang chủ mặc định (en)
+    label: 'Products',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'ProductsPage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: true
+  },
+  {
+    key: 'privacy',
+    lang: 'vi',
+    slug: 'cs-bao-mat', // Trang chủ mặc định (vi)
+    label: 'Chính sách bảo mật',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'PrivacyPage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: false
+  },
+  {
+    key: 'privacy',
+    lang: 'en',
+    slug: 'privacy', // Trang chủ mặc định (en)
+    label: 'Privacy',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'PrivacyPage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: false
+  },
+  {
+    key: 'terms',
+    lang: 'vi',
+    slug: 'cs-dich-vu', // Trang chủ mặc định (vi)
+    label: 'Chính sách dịch vụ',
+    title: `${companyName.vi || 'Vibe Code Studio'} - Sự kết hợp giữa AI và chuyên gia`,
+    action: 'TermsPage',
+    description: 'Tốc Độ AI & Chất Lượng Developer Xây dựng website chuyên nghiệp với sức mạnh AI và tay nghề chuyên gia',
+    ogImage: data_info.image.src,
+    header: false
+  },
+  {
+    key: 'terms',
+    lang: 'en',
+    slug: 'terms', // Trang chủ mặc định (en)
+    label: 'Terms of Service',
+    title: `${companyName.en || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+    action: 'TermsPage',
+    description: 'AI Speed & Developer Quality - Building Professional Websites with the Power of AI and Expertise',
+    ogImage: data_info.image.src,
+    header: false
+  }
+];
 
-<html lang="en" class="w-full h-full">
+export const data_products = await getProducts(data_info[0], pages);
+data_products.map(product => {
+  Object.keys(product.slug).map((p: string) => {
+    pages.push({
+      key: `product`,
+      id: product._id,
+      lang: p,
+      slug: product.slug[p],
+      slugP: product.slugP[p],
+      label: `${product.itemName[p] || 'Sản phẩm'}`,
+      title: `${companyName[p] || 'Vibe Code Studio'} - The Fusion of AI and Experts`,
+      action: 'ProductDetailPage',
+      description: `${product.itemDescription[p] || 'Sản phẩm'}`,
+      ogImage: product.itemImage[p].src,
+      header: false
+    });
+  });
+});
+
+export async function getStaticPaths() {  
+  // Gọi hàm tạo sitemap sau khi tất cả các trang đã được thu thập
+  await generateAndSaveSitemap(pages, data_info);
+  // 2. Map mảng pages sang định dạng của Astro
+  return pages.map(page => {
+    const dictionary = {
+      tencongty: data_info.tencongty[page.lang],
+      diachi: data_info.diachi[page.lang]
+    };
+    const title = replacePlaceholders(page.title, dictionary);
+    const description = replacePlaceholders(page.description, dictionary); 
+
+    return {
+      params: { slug: page.slug },
+      props: {
+        type: 'home',
+        baseUrl: WC_URL,
+        title: title,
+        description: description,
+        ogImage: page.ogImage,
+      }
+    };
+  });
+}
+
+const lang = returnLang(pages, Astro.url.pathname);
+const props: AppRouterProps = {
+  basename: '/',
+  pages: pages,
+  data_info: data_info,
+  data_pages: data_pages,
+  data_products: data_products
+};
+// Sử dụng Astro.url để lấy URL chính xác, đảm bảo không bị lỗi double slash
+const siteOrigin = (WC_URL_CLIENT || Astro.url.origin).replace(/\/$/, '');
+const currentPageUrl = new URL(Astro.url.pathname, siteOrigin).href;
+const headProps: HeadProps = {
+  title: Astro.props.title,
+  href: currentPageUrl,
+  ogImage: siteOrigin + Astro.props.ogImage,
+  description: Astro.props.description,
+  lang: lang,
+  data_info: data_info
+}
+---
+<html lang={lang} class="w-full h-full">
   <head>
-    <Head />
-    <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+    <Head {...headProps} />
   </head>
   <body class="w-full h-full">
+    <PageTransition client:load />
+    <div style="display:none">Build ID: {Date.now()}</div>
     <div id="root" class="w-full h-full">
-      <AppRouter client:only="react" />
+      <AppRouter client:idle {...props} />
     </div>
   </body>
 </html>

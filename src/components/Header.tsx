@@ -1,14 +1,38 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/integrations';
 import Cart from '@/components/Cart';
+import { AppRouterProps, Pages } from '@/entities';
+import { handlePageLink } from './PageTransition';
+import { getTranslation, getContent } from '@/lib/i18n';
+import { useLanguage } from '@/lib/LanguageContext';
 
-export default function Header() {
+export default function Header(props: AppRouterProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { itemCount, actions } = useCart();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { language, setLanguage } = useLanguage();
+  const { itemCount, actions } = useCart(language);
+  let navItems = props.pages.filter((a: Pages) => { 
+    if (!a.slug) return false;
+    return a.lang === language && a.header == true;
+  });
+  const langs = [...new Set(props.pages.map((a: Pages) => a.lang))];
+  const link_home = navItems.find((a:Pages)=> a.key === 'home' && a.lang === language && a.slug != undefined).slug;
+  const link_contact = navItems.find((a:Pages)=> a.key === 'contact' && a.lang === language && a.slug != undefined).slug;
+
+  const isActive = (page: Pages) => {
+    let str:string = location.pathname.startsWith("/") ? location.pathname.substring(1) : location.pathname;
+    str = str.endsWith("/") ? str.slice(0, -1) : str;
+    let active = page.slug === str;
+    if(!active) {
+      const pageDT = props.pages.find((a:Pages)=> a.slugP === page.slug && a.slug == str);
+      active = pageDT != null;
+    }
+    return active;
+  };
 
   return (
     <>
@@ -16,38 +40,24 @@ export default function Header() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center">
+            <Link to={link_home} className="flex items-center">
               <span className="text-xl md:text-2xl font-heading font-bold text-primary">
-                shophoacomay.vn
+                {getTranslation('footer.company', language, props)}
               </span>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              <Link 
-                to="/" 
-                className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
+              {navItems.map((item) => (
+              <Link
+                key={item.slug}
+                className={isActive(item) ? "text-base font-paragraph text-accent" : "text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"}
+                onClick={(e) => handlePageLink(e, `/${item.slug}`, navigate)}
+                to={item.slug}
               >
-                Trang chủ
+                {item.label}
               </Link>
-              <Link 
-                to="/products" 
-                className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-              >
-                Sản phẩm
-              </Link>
-              <Link 
-                to="/about" 
-                className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-              >
-                Về chúng tôi
-              </Link>
-              <Link 
-                to="/contact" 
-                className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-              >
-                Liên hệ
-              </Link>
+              ))}
             </nav>
 
             {/* Actions */}
@@ -68,10 +78,10 @@ export default function Header() {
 
               <Button
                 className="hidden md:flex items-center gap-2 bg-accent hover:bg-accent/90 text-white transition-all duration-200 hover:scale-[1.02]"
-                onClick={() => navigate('/contact')}
+                onClick={() => navigate(`/${link_contact}`)}
               >
                 <Phone className="h-4 w-4" />
-                Liên hệ ngay
+                {getTranslation('header.contact', language, props)}
               </Button>
 
               {/* Mobile Menu Toggle */}
@@ -94,50 +104,35 @@ export default function Header() {
           {isMenuOpen && (
             <nav className="md:hidden py-4 border-t border-border/40">
               <div className="flex flex-col gap-4">
-                <Link 
-                  to="/" 
+                {navItems.map((item) => (
+                <Link
+                  key={item.slug}
                   className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    setIsMenuOpen(false)
+                    handlePageLink(e, `/${item.slug}`, navigate)
+                  }}
+                  to={item.slug}
                 >
-                  Trang chủ
+                  {item.label}
                 </Link>
-                <Link 
-                  to="/products" 
-                  className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sản phẩm
-                </Link>
-                <Link 
-                  to="/about" 
-                  className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Về chúng tôi
-                </Link>
-                <Link 
-                  to="/contact" 
-                  className="text-base font-paragraph text-primary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Liên hệ
-                </Link>
+                ))}
                 <Button
                   className="w-full bg-accent hover:bg-accent/90 text-white"
                   onClick={() => {
                     setIsMenuOpen(false);
-                    navigate('/contact');
+                    navigate(`/${link_contact}`);
                   }}
                 >
                   <Phone className="h-4 w-4 mr-2" />
-                  Liên hệ ngay
+                  {getTranslation('header.contact', language, props)}
                 </Button>
               </div>
             </nav>
           )}
         </div>
       </header>
-      <Cart />
+      <Cart {...props} />
     </>
   );
 }

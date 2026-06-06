@@ -1,0 +1,88 @@
+/**
+ * Escape các ký tự đặc biệt trong HTML để tránh lỗi định dạng và bảo vệ XSS
+ */
+import he from 'he';
+export const escapeHtml = (unsafe: string): string => {
+  if (!unsafe) return '';
+  return he.encode(unsafe);
+};
+
+export const removeUnicode = (decodedStr: string) => {
+  return decodedStr
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D");
+}
+
+export const replacePlaceholders = (templateStr: string, dataObj: any) => {
+  if (!templateStr) return '';
+  
+  // Sử dụng Regex để tìm các chuỗi nằm trong cặp dấu ngoặc nhọn {key}
+  return templateStr.replace(/{(\w+)}/g, (match, key) => {
+    // Nếu tìm thấy key trong dataObj thì lấy giá trị, ngược lại giữ nguyên text cũ (hoặc trả về chuỗi rỗng)
+    return dataObj[key] !== undefined ? dataObj[key] : match;
+  });
+};
+
+export const getWebpPath = (url: string) => {
+  if (!url) return "";
+
+  // 1. Kiểm tra nếu đang chạy trên trình duyệt và đường dẫn hiện tại bắt đầu bằng /preview
+  const isPreviewPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/preview');
+  
+  // 2. Nếu là đường dẫn tuyệt đối (bắt đầu bằng http), thường là ảnh từ WP chưa được xử lý local
+  if (isPreviewPath || url.startsWith('http')) {
+    return url;
+  }
+
+  return url.replace(/\.[^/.]+$/, "") + ".webp";
+};
+
+export const stripHtmlAndUnescape = (html: string): string => {
+  if (!html) return '';
+  // 1. Loại bỏ các thẻ HTML bằng Regex
+  const regexStripHtml = /<[^>]*>?/gm;
+  const plainText = html.replace(regexStripHtml, '');
+
+  // 2. Giải mã các kí tự đặc biệt (entities) như &#34;, &nbsp;...
+  return he.decode(plainText).replace(/\s+/g, ' ').trim();
+};
+
+/**
+ * Thay thế các placeholder {key} bằng giá trị thực tế từ một object dữ liệu
+ */
+export const resolvePlaceholders = (text: string, data: any): string => {
+  if (!text) return '';
+  return text.replace(/\{(\w+)\}/g, (match, key) => {
+    const value = data[key];
+    // Trước khi trả về, chúng ta escape giá trị để an toàn khi đưa vào HTML
+    return value !== undefined ? escapeHtml(String(value)) : match;
+  });
+};
+
+/**
+ * Định dạng số thành chuỗi tiền tệ VNĐ.
+ * @param amount Số tiền cần định dạng.
+ * @returns Chuỗi tiền tệ đã định dạng (ví dụ: "1.000.000 VNĐ").
+ */
+export const formatCurrency = (amount: number | string, currency: string = 'VND'): string => {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(num)) {
+    return ''; // Trả về chuỗi rỗng nếu không phải là số hợp lệ
+  }
+  currency = removeUnicode(currency);
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: currency }).format(num);
+};
+
+export const formatCurrencyValue = (amount: number | string, currency: string = 'VND'): string => {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(num)) {
+    return ''; // Trả về chuỗi rỗng nếu không phải là số hợp lệ
+  }
+  currency = removeUnicode(currency);
+  if(currency == 'VND') {
+    return new Intl.NumberFormat('vi-VN').format(num / 1000000);
+  }
+  return new Intl.NumberFormat('vi-VN').format(num);
+};
